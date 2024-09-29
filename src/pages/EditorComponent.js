@@ -18,6 +18,8 @@ import LanguageSelect from "../components/js/LanguageSelect";
 import ToggleTheme from "../components/js/ToggleTheme";
 import EditorThemeSelect from "../components/js/EditorThemeSelect";
 import { defineEditorTheme } from "../components/js/defineEditorTheme";
+import GoogleSignIn from "../components/js/GoogleSignIn";
+import { useAuth } from "../context/AuthContext.js";
 
 const StyledButton = styled(Button)({
   display: "flex",
@@ -25,7 +27,6 @@ const StyledButton = styled(Button)({
   justifyContent: "center",
   gap: "0.5rem",
 });
-
 
 const StyledLayout = styled("div")(({ theme }) => ({
   display: "flex",
@@ -58,11 +59,13 @@ function EditorComponent() {
     LANGUAGES[0].DEFAULT_LANGUAGE
   );
   const [languageDetails, setLanguageDetails] = useState(LANGUAGES[0]);
-  const [currentEditorTheme, setCurrentEditorTheme] = useState(EDITOR_THEMES[1]);
+  const [currentEditorTheme, setCurrentEditorTheme] = useState(
+    EDITOR_THEMES[1]
+  );
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const editorRef = useRef(null);
-
+  const { currentUser, logOut } = useAuth();
 
   const styles = {
     flex: {
@@ -201,15 +204,39 @@ function EditorComponent() {
       >
         <div style={styles.flex}>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <img src="./images/custom-code-editor-rounded.svg" alt="Custom Code Editor icon" width={32} style={{ marginLeft: "0.5rem" }} />
-            <span style={{ backgroundClip: "text", background: "linear-gradient(#2837BA 0%, #2F1888 100%)", WebkitBackgroundClip: "text", color: "transparent", marginLeft: "0.5rem", fontWeight: "bold", fontSize: "1.5em" }}>Custom Code Editor</span>
+            <img
+              src="./images/custom-code-editor-rounded.svg"
+              alt="Custom Code Editor icon"
+              width={32}
+              style={{ marginLeft: "0.5rem" }}
+            />
+            <span
+              style={{
+                backgroundClip: "text",
+                background: "linear-gradient(#2837BA 0%, #2F1888 100%)",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                marginLeft: "0.5rem",
+                fontWeight: "bold",
+                fontSize: "1.5em",
+              }}
+            >
+              Custom Code Editor
+            </span>
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
+            {currentUser ? (
+              <>
+                <span>Welcome, {currentUser.displayName} </span>
+              </>
+            ) : (
+              <GoogleSignIn />
+            )}
             <ToggleTheme />
             <Stars />
           </div>
         </div>
-      </Box >
+      </Box>
       <StyledLayout>
         <Editor
           className="editor"
@@ -269,7 +296,7 @@ function EditorComponent() {
             return <div key={i}>{result}</div>;
           })}
       </OutputLayout>
-    </div >
+    </div>
   );
 }
 
